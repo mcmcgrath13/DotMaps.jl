@@ -23,19 +23,18 @@ end
 DotMap(d::Any) = d
 
 """
-   DotMaps.todict(::DotMap)
+   DotMaps.todict(::DotMap; keys_as_strings=false)
 
-Constructs a Dict from a DotMap.
+Constructs a Dict from a DotMap. If `keys_as_strings`, the keys will be `String` instead of `Symbol`.
 """
 function todict(obj::DotMap; keys_as_strings::Bool = false)
-   new_dict = Dict()
-   dm = obj.__dict__
-   for (k, v) in dm
+   dict = Dict()
+   for (k, v) in obj
       nk = keys_as_strings ? string(k) : k
-      new_dict[nk] = todict(v, keys_as_strings = keys_as_strings)
+      dict[nk] = todict(v, keys_as_strings = keys_as_strings)
    end
 
-   return new_dict
+   return dict
 end
 
 # return at leaves
