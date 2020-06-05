@@ -22,6 +22,25 @@ end
 
 DotMap(d::Any) = d
 
+"""
+   DotMaps.todict(::DotMap)
+
+Constructs a Dict from a DotMap.
+"""
+function todict(obj::DotMap; keys_as_strings::Bool = false)
+   new_dict = Dict()
+   dm = obj.__dict__
+   for (k, v) in dm
+      nk = keys_as_strings ? string(k) : k
+      new_dict[nk] = todict(v, keys_as_strings = keys_as_strings)
+   end
+
+   return new_dict
+end
+
+# return at leaves
+todict(obj::Any; keys_as_strings::Bool = false) = obj
+
 # make dots work
 function Base.getproperty(obj::DotMap, name::Symbol)
    if name == :__dict__
@@ -31,16 +50,16 @@ function Base.getproperty(obj::DotMap, name::Symbol)
    end
 end
 
-function Base.setproperty!(obj::DotMap, name::Symbol, x)
-   obj.__dict__[name] = x
-end
-
 # make dictionary indexing work
 Base.getindex(obj::DotMap, name::Symbol) = Base.getindex(obj.__dict__, name)
 Base.getindex(obj::DotMap, name::Any) = Base.getindex(obj, Symbol(name))
 
-Base.setindex!(obj::DotMap, name::Symbol, x) = Base.setindex!(obj.__dict__, name, x)
-Base.setindex!(obj::DotMap, name, x) = Base.setindex!(obj, Symbol(name), x)
+Base.setindex!(obj::DotMap, x, name::Symbol) = Base.setindex!(obj.__dict__, x, name)
+Base.setindex!(obj::DotMap, x::Dict, name::Symbol) = Base.setindex!(obj.__dict__, DotMap(x), name)
+Base.setindex!(obj::DotMap, x, name) = Base.setindex!(obj, x, Symbol(name))
+
+# assignment with dots
+Base.setproperty!(obj::DotMap, name::Symbol, x) = Base.setindex!(obj, x, name)
 
 # iteration
 Base.iterate(obj::DotMap) = Base.iterate(obj.__dict__)
