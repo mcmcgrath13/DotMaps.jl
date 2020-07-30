@@ -3,7 +3,7 @@ module DotMaps
 export DotMap
 
 """
-   DotMaps.DotMap(::Dict)
+   DotMaps.DotMap(::AbstractDict)
 
 Constructs a DotMap from a Dict.  This provides the same functionaliity as dictionaries, but allows indexing with `.` instead of (or in addition to) `[""]`.
 """
@@ -12,7 +12,7 @@ mutable struct DotMap
     DotMap() = new(Dict{Symbol,Any}())
 end
 
-function DotMap(d::Dict)
+function DotMap(d::AbstractDict)
    dm = DotMap()
    for (k, v) in d
       dm.__dict__[Symbol(k)] = DotMap(v)
