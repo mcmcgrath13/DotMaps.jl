@@ -1,7 +1,7 @@
 name = "DotMaps"
 uuid = "98454f44-f182-4945-8d34-ddde53e72162"
 authors = ["mcmcgrath13 <m.c.mcgrath13@gmail.com> and contributors"]
-version = "0.1.0"
+version = "0.1.1"
 
 [compat]
 julia = "1"
