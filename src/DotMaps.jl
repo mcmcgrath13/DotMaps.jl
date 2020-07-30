@@ -7,7 +7,7 @@ export DotMap
 
 Constructs a DotMap from a Dict.  This provides the same functionaliity as dictionaries, but allows indexing with `.` instead of (or in addition to) `[""]`.
 """
-mutable struct DotMap
+struct DotMap
     __dict__ ::Dict{Symbol,Any}
     DotMap() = new(Dict{Symbol,Any}())
 end
