@@ -11,6 +11,9 @@ dm = DotMap(dict)
 dm.c.d # returns 3
 dm.c.e = 5
 dm["c"].e # returns 5
+
+DotMap.todict(dm, keys_as_strings=true) # returns Dict("a"=>1, "b"=>2, "c" => Dict("d"=>3, "e"=>5))
+DotMap.todict(dm) # returns Dict(:a=>1, :b=>2, :c => Dict(:d=>3, :e=>5))
 ```
 
 **NOTE** This is not as performative as using normal dictionaries, but is nice for accessing deeply nested dictionary structures, such as large config/yaml/json files.

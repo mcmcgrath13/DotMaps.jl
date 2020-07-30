@@ -3,7 +3,7 @@ module DotMaps
 export DotMap
 
 """
-   DotMaps.DotMap(::Dict)
+   DotMaps.DotMap(::AbstractDict)
 
 Constructs a DotMap from a Dict.  This provides the same functionaliity as dictionaries, but allows indexing with `.` instead of (or in addition to) `[""]`.
 """
@@ -12,7 +12,7 @@ mutable struct DotMap
     DotMap() = new(Dict{Symbol,Any}())
 end
 
-function DotMap(d::Dict)
+function DotMap(d::AbstractDict)
    dm = DotMap()
    for (k, v) in d
       dm.__dict__[Symbol(k)] = DotMap(v)
@@ -21,6 +21,24 @@ function DotMap(d::Dict)
 end
 
 DotMap(d::Any) = d
+
+"""
+   DotMaps.todict(::DotMap; keys_as_strings=false)
+
+Constructs a Dict from a DotMap. If `keys_as_strings`, the keys will be `String` instead of `Symbol`.
+"""
+function todict(obj::DotMap; keys_as_strings::Bool = false)
+   dict = Dict()
+   for (k, v) in obj
+      nk = keys_as_strings ? string(k) : k
+      dict[nk] = todict(v, keys_as_strings = keys_as_strings)
+   end
+
+   return dict
+end
+
+# return at leaves
+todict(obj::Any; keys_as_strings::Bool = false) = obj
 
 # make dots work
 function Base.getproperty(obj::DotMap, name::Symbol)
@@ -31,16 +49,16 @@ function Base.getproperty(obj::DotMap, name::Symbol)
    end
 end
 
-function Base.setproperty!(obj::DotMap, name::Symbol, x)
-   obj.__dict__[name] = x
-end
-
 # make dictionary indexing work
 Base.getindex(obj::DotMap, name::Symbol) = Base.getindex(obj.__dict__, name)
 Base.getindex(obj::DotMap, name::Any) = Base.getindex(obj, Symbol(name))
 
-Base.setindex!(obj::DotMap, name::Symbol, x) = Base.setindex!(obj.__dict__, name, x)
-Base.setindex!(obj::DotMap, name, x) = Base.setindex!(obj, Symbol(name), x)
+Base.setindex!(obj::DotMap, x, name::Symbol) = Base.setindex!(obj.__dict__, x, name)
+Base.setindex!(obj::DotMap, x::Dict, name::Symbol) = Base.setindex!(obj.__dict__, DotMap(x), name)
+Base.setindex!(obj::DotMap, x, name) = Base.setindex!(obj, x, Symbol(name))
+
+# assignment with dots
+Base.setproperty!(obj::DotMap, name::Symbol, x) = Base.setindex!(obj, x, name)
 
 # iteration
 Base.iterate(obj::DotMap) = Base.iterate(obj.__dict__)

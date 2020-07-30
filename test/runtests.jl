@@ -19,6 +19,9 @@ using Test
     @test DM.c.e == 5
     @test DM["c"].e == 5
 
+    DM.c.f = Dict("g" => 6)
+    @test DM.c.f.g == 6
+
     for (k, v) in DM
         @test isa(k, Symbol)
     end
@@ -39,4 +42,11 @@ using Test
     @test :a in propertynames(DM)
 
     @test isempty(DotMap())
+
+    d = DotMap()
+    d.a = Dict("b" => 2)
+    dd = DotMaps.todict(d, keys_as_strings=true)
+    @test dd == Dict("a" => Dict("b" => 2))
+    dds = DotMaps.todict(d)
+    @test dds == Dict(:a => Dict(:b => 2))
 end
